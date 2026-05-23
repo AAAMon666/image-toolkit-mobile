@@ -21,9 +21,6 @@ export function AiImagePanel({
   const [ratioKey, setRatioKey] = useState<(typeof ratioOptions)[number]["key"]>("square");
   const [qualityKey, setQualityKey] = useState<(typeof qualityOptions)[number]["key"]>("1k");
   const [imageCount, setImageCount] = useState(1);
-  const [freeWidth, setFreeWidth] = useState(1);
-  const [freeHeight, setFreeHeight] = useState(1);
-  const [references, setReferences] = useState<File[]>([]);
   const [generated, setGenerated] = useState<GeneratedImage[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +42,6 @@ export function AiImagePanel({
       formData.append("ratioKey", ratioKey);
       formData.append("qualityKey", qualityKey);
       formData.append("imageCount", String(imageCount));
-      formData.append("freeWidth", String(freeWidth));
-      formData.append("freeHeight", String(freeHeight));
-      references.forEach((file) => formData.append("references", file));
 
       const response = await fetch("/api/ai-image", {
         method: "POST",
@@ -119,19 +113,6 @@ export function AiImagePanel({
           <p className="mt-2 text-xs text-[var(--muted)]">当前用途提示：{activeRatio.hint}</p>
         </div>
 
-        {ratioKey === "free" ? (
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-2 block text-sm font-medium">自由宽比</label>
-              <input type="number" min="1" value={freeWidth} onChange={(event) => setFreeWidth(Number(event.target.value) || 1)} />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">自由高比</label>
-              <input type="number" min="1" value={freeHeight} onChange={(event) => setFreeHeight(Number(event.target.value) || 1)} />
-            </div>
-          </div>
-        ) : null}
-
         <div>
           <label className="mb-2 block text-sm font-medium">清晰度</label>
           <select value={qualityKey} onChange={(event) => setQualityKey(event.target.value as typeof qualityKey)}>
@@ -151,25 +132,6 @@ export function AiImagePanel({
             <option value={3}>3 张</option>
             <option value={4}>4 张</option>
           </select>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium">参考图</label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={(event) => setReferences(Array.from(event.target.files ?? []))}
-          />
-          {references.length ? (
-            <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-[var(--muted)]">
-              {references.map((file, index) => (
-                <div key={`${file.name}-${index}`} className="truncate rounded-xl border border-[var(--line)] px-2 py-2">
-                  {file.name}
-                </div>
-              ))}
-            </div>
-          ) : null}
         </div>
 
         <button

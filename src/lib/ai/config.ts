@@ -4,8 +4,6 @@ export const ratioOptions = [
   { key: "poster", label: "3:4", hint: "适合人物海报、竖版封面", width: 3, height: 4 },
   { key: "banner", label: "16:9", hint: "适合横幅、网页首屏、视频封面", width: 16, height: 9 },
   { key: "mobile", label: "9:16", hint: "适合手机海报、短视频封面", width: 9, height: 16 },
-  { key: "a3", label: "A3 海报", hint: "适合印刷海报、活动宣传图", width: 297, height: 420 },
-  { key: "free", label: "自由比例", hint: "自定义宽高比", width: 1, height: 1 },
 ] as const;
 
 export const qualityOptions = [
@@ -17,18 +15,8 @@ export const qualityOptions = [
 export type RatioKey = (typeof ratioOptions)[number]["key"];
 export type QualityKey = (typeof qualityOptions)[number]["key"];
 
-export function getRatioDimensions(
-  ratioKey: RatioKey,
-  freeWidth: number,
-  freeHeight: number,
-) {
+export function getRatioDimensions(ratioKey: RatioKey) {
   const selected = ratioOptions.find((item) => item.key === ratioKey) ?? ratioOptions[0];
-  if (ratioKey === "free") {
-    return {
-      width: Math.max(1, freeWidth),
-      height: Math.max(1, freeHeight),
-    };
-  }
 
   return {
     width: selected.width,
@@ -36,13 +24,8 @@ export function getRatioDimensions(
   };
 }
 
-export function mapRenderSize(
-  ratioKey: RatioKey,
-  qualityKey: QualityKey,
-  freeWidth: number,
-  freeHeight: number,
-) {
-  const ratio = getRatioDimensions(ratioKey, freeWidth, freeHeight);
+export function mapRenderSize(ratioKey: RatioKey, qualityKey: QualityKey) {
+  const ratio = getRatioDimensions(ratioKey);
   const quality = qualityOptions.find((item) => item.key === qualityKey) ?? qualityOptions[0];
 
   const landscape = ratio.width >= ratio.height;

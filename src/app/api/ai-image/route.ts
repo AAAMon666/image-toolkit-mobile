@@ -4,6 +4,15 @@ import { getCurrentAppUser } from "@/lib/auth/get-current-app-user";
 import { mapRenderSize } from "@/lib/ai/config";
 import { readAiEnv } from "@/lib/ai/env";
 
+async function filesToDataUrls(files: File[]) {
+  return Promise.all(
+    files.map(async (file) => {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      return `data:${file.type || "image/png"};base64,${buffer.toString("base64")}`;
+    }),
+  );
+}
+
 export async function POST(request: Request) {
   const currentUser = await getCurrentAppUser();
   if (!currentUser) {
@@ -15,8 +24,6 @@ export async function POST(request: Request) {
   const ratioKey = String(formData.get("ratioKey") ?? "square") as never;
   const qualityKey = String(formData.get("qualityKey") ?? "1k") as never;
   const imageCount = Number(formData.get("imageCount") ?? 1);
-  const freeWidth = Number(formData.get("freeWidth") ?? 1);
-  const freeHeight = Number(formData.get("freeHeight") ?? 1);
   const references = formData.getAll("references").filter((item): item is File => item instanceof File);
 
   if (!prompt) {
@@ -81,23 +88,35 @@ export async function POST(request: Request) {
     }
   }
 
-  const renderSize = mapRenderSize(ratioKey, qualityKey, freeWidth, freeHeight);
-  const upstream = new FormData();
-  upstream.append("model", env.model);
-  upstream.append("prompt", prompt);
-  upstream.append("size", renderSize.size);
-  upstream.append("n", String(imageCount));
+  const renderSize = mapRenderSize(ratioKey, qualityKey);
+  const imagePayload = references.length ? await filesToDataUrls(references) : undefined;
+  const promptWithGuide = imagePayload?.length
+    ? `${prompt}\n请严格参考上传图片的主体、外观、构图与风格进行生成，在保持参考特征的前提下完成创作。`
+    : prompt;
+  const body: Record<string, unknown> = {
+    model: env.model,
+    prompt: promptWithGuide,
+    size: renderSize.size,
+    n: imageCount,
+  };
 
-  references.forEach((file) => {
-    upstream.append("image[]", file, file.name);
-  });
+  if (imagePayload?.length === 1) {
+    body.image = imagePayload[0];
+    body.reference_images = imagePayload;
+  }
+
+  if (imagePayload && imagePayload.length > 1) {
+    body.images = imagePayload;
+    body.reference_images = imagePayload;
+  }
 
   const response = await fetch(`${env.baseUrl}/images/generations`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${env.apiKey}`,
+      "Content-Type": "application/json",
     },
-    body: upstream,
+    body: JSON.stringify(body),
   });
 
   const payload = await response.json().catch(() => null);
