@@ -13,5 +13,8 @@ export default async function Home() {
     redirect("/login");
   }
 
-  return <Workspace email={user.email ?? "已登录用户"} signOut={<SignOutButton />} />;
+  const username = user.user_metadata.username ?? user.email ?? "已登录用户";
+  const role = user.app_metadata.role ?? "user";
+
+  return <Workspace username={username} role={role} signOut={<SignOutButton />} />;
 }

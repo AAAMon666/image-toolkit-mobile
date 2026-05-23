@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 import { ImageUploader } from "@/components/image-uploader";
 import { ResultActions } from "@/components/result-actions";
 import { stitchImages } from "@/lib/image/stitch";
@@ -26,6 +27,10 @@ export function StitchPanel() {
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const previewUrl = useMemo(() => {
+    return result ? URL.createObjectURL(result.blob) : null;
+  }, [result]);
 
   async function handleStitch() {
     if (!items.length) return;
@@ -137,8 +142,23 @@ export function StitchPanel() {
       </div>
 
       {result ? (
-        <div className="rounded-3xl bg-white p-4 text-sm text-slate-700">
-          输出尺寸：{formatDimensions(result.width, result.height)}
+        <div className="space-y-3 rounded-3xl bg-white p-4 text-sm text-slate-700">
+          <div>输出尺寸：{formatDimensions(result.width, result.height)}</div>
+          {previewUrl ? (
+            <div className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3">
+              <div className="mb-2 text-sm font-medium text-slate-800">长图预览</div>
+              <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2">
+                <Image
+                  unoptimized
+                  src={previewUrl}
+                  alt="长图预览"
+                  width={result.width}
+                  height={result.height}
+                  className="h-auto w-full rounded-lg"
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

@@ -1,20 +1,27 @@
 "use client";
 
 import { useActionState } from "react";
-import { sendMagicLink, type LoginState } from "@/app/login/actions";
+import { authenticate, type LoginState } from "@/app/login/actions";
 
 const initialState: LoginState = {};
 
 export function LoginForm() {
-  const [state, action, pending] = useActionState(sendMagicLink, initialState);
+  const [state, action, pending] = useActionState(authenticate, initialState);
 
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-800">
-          邮箱登录
+        <label htmlFor="username" className="mb-2 block text-sm font-medium text-slate-800">
+          用户名
         </label>
-        <input id="email" name="email" type="email" placeholder="name@example.com" />
+        <input id="username" name="username" type="text" placeholder="例如 Zhouyi" />
+      </div>
+
+      <div>
+        <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-800">
+          密码
+        </label>
+        <input id="password" name="password" type="password" placeholder="请输入密码" />
       </div>
 
       {state.error ? (
@@ -27,13 +34,26 @@ export function LoginForm() {
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-full bg-blue-600 px-4 py-3 text-sm font-medium text-white disabled:bg-slate-300"
-      >
-        {pending ? "发送中..." : "发送登录链接"}
-      </button>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="submit"
+          name="mode"
+          value="sign-in"
+          disabled={pending}
+          className="rounded-full bg-blue-600 px-4 py-3 text-sm font-medium text-white disabled:bg-slate-300"
+        >
+          {pending ? "提交中..." : "登录"}
+        </button>
+        <button
+          type="submit"
+          name="mode"
+          value="sign-up"
+          disabled={pending}
+          className="rounded-full border border-[var(--line)] bg-white px-4 py-3 text-sm font-medium text-slate-700 disabled:bg-slate-100"
+        >
+          {pending ? "提交中..." : "注册"}
+        </button>
+      </div>
     </form>
   );
 }

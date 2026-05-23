@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { ImageUploader } from "@/components/image-uploader";
 import { ResultActions } from "@/components/result-actions";
@@ -25,6 +26,10 @@ export function IdPhotoPanel() {
     () => idPhotoPresets.find((item) => item.id === presetId) ?? idPhotoPresets[0],
     [presetId],
   );
+
+  const previewUrl = useMemo(() => {
+    return result ? URL.createObjectURL(result.blob) : null;
+  }, [result]);
 
   async function handleRender() {
     if (!file) return;
@@ -115,8 +120,28 @@ export function IdPhotoPanel() {
         </button>
       </div>
 
-      <div className="rounded-3xl bg-white p-4 text-sm text-slate-700">
-        当前比例：{formatDimensions(preset.width, preset.height)}
+      <div className="space-y-3 rounded-3xl bg-white p-4 text-sm text-slate-700">
+        <div>当前比例：{formatDimensions(preset.width, preset.height)}</div>
+        {previewUrl ? (
+          <div className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3">
+            <div className="mb-2 text-sm font-medium text-slate-800">证件照预览</div>
+            <div className="flex justify-center rounded-xl border border-slate-200 bg-white p-4">
+              <div
+                className="w-full max-w-40 overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
+                style={{ aspectRatio: `${preset.width} / ${preset.height}` }}
+              >
+                <Image
+                  unoptimized
+                  src={previewUrl}
+                  alt="证件照预览"
+                  width={result?.width ?? preset.width}
+                  height={result?.height ?? preset.height}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}

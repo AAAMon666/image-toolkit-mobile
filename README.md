@@ -4,7 +4,7 @@
 
 ## 当前功能
 
-- 邮箱 Magic Link 登录
+- 用户名 + 密码注册/登录
 - 图片压缩
 - 任意尺寸图片拼接长图
 - 常用证件照尺寸裁切导出
@@ -23,7 +23,14 @@ npm run dev
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SITE_URL=
 ```
+
+## 登录说明
+
+- 用户名仅支持字母、数字和下划线
+- 系统内部会把用户名映射为一个 Supabase 邮箱账号
+- 当前已创建超级管理员：`Zhouyi`
 
 ## Supabase
 

@@ -9,10 +9,12 @@ import { IdPhotoPanel } from "@/features/id-photo/id-photo-panel";
 import type { ToolTab } from "@/lib/image/shared";
 
 export function Workspace({
-  email,
+  username,
+  role,
   signOut,
 }: {
-  email: string;
+  username: string;
+  role: string;
   signOut: React.ReactNode;
 }) {
   const [tab, setTab] = useState<ToolTab>("compress");
@@ -27,7 +29,10 @@ export function Workspace({
         <div className="rounded-[24px] bg-slate-900 p-4 text-white">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Supabase Auth</p>
           <div className="mt-2 text-lg font-semibold">欢迎回来</div>
-          <div className="mt-1 text-sm text-slate-300">{email}</div>
+          <div className="mt-1 text-sm text-slate-300">{username}</div>
+          <div className="mt-2 inline-flex rounded-full bg-amber-400/20 px-3 py-1 text-xs text-amber-200">
+            {role}
+          </div>
         </div>
 
         <div className="mt-4 flex-1 overflow-y-auto pb-1">

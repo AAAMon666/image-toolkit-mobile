@@ -22,9 +22,9 @@ export default async function LoginPage() {
         <div>
           <div className="rounded-[24px] bg-linear-to-br from-blue-600 to-cyan-400 p-5 text-white">
             <p className="text-sm text-blue-50">移动端图片工具</p>
-            <h2 className="mt-2 text-2xl font-semibold">登录后立即开始处理图片</h2>
+            <h2 className="mt-2 text-2xl font-semibold">用户名密码登录</h2>
             <p className="mt-3 text-sm leading-6 text-blue-50">
-              第一版包含图片压缩、任意尺寸长图拼接、证件照尺寸裁切。
+              可直接注册账号并登录，不再使用邮件登录链接。
             </p>
           </div>
 
@@ -34,7 +34,7 @@ export default async function LoginPage() {
         </div>
 
         <p className="mt-5 text-center text-xs leading-5 text-[var(--muted)]">
-          登录方式采用 Supabase 邮箱 Magic Link。
+          用户名仅支持字母、数字和下划线。
         </p>
       </div>
     </MobileShell>
