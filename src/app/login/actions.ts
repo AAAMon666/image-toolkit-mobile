@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const authSchema = z.object({
   username: z
@@ -42,7 +43,7 @@ export async function authenticate(
   const email = usernameToEmail(username);
 
   if (mode === "sign-up") {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -52,6 +53,19 @@ export async function authenticate(
 
     if (error) {
       return { error: error.message };
+    }
+
+    if (data.user) {
+      const admin = await createAdminClient();
+      await admin.rpc("initialize_user_account", {
+        p_user_id: data.user.id,
+        p_username: username,
+        p_role: "user",
+        p_initial_credits: 2,
+      });
+      await admin.auth.admin.updateUserById(data.user.id, {
+        app_metadata: { role: "user" },
+      });
     }
 
     redirect("/");

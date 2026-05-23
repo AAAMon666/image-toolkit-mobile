@@ -7,6 +7,7 @@ const tabs: { id: ToolTab; label: string; description: string }[] = [
   { id: "compress", label: "图片压缩", description: "减小文件体积" },
   { id: "stitch", label: "拼接长图", description: "任意尺寸纵向拼接" },
   { id: "id-photo", label: "证件照", description: "常用尺寸裁切导出" },
+  { id: "ai-image", label: "AI 生图", description: "参考图 + 文案生成" },
 ];
 
 export function ToolTabs({
@@ -17,7 +18,7 @@ export function ToolTabs({
   onChange: (value: ToolTab) => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {tabs.map((tab) => (
         <button
           key={tab.id}

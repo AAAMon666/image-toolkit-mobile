@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Workspace } from "@/components/workspace";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { getCurrentAppUser } from "@/lib/auth/get-current-app-user";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -13,8 +14,17 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const username = user.user_metadata.username ?? user.email ?? "已登录用户";
-  const role = user.app_metadata.role ?? "user";
+  const currentUser = await getCurrentAppUser();
+  if (!currentUser) {
+    redirect("/login");
+  }
 
-  return <Workspace username={username} role={role} signOut={<SignOutButton />} />;
+  return (
+    <Workspace
+      username={currentUser.username}
+      role={currentUser.role}
+      remainingCredits={currentUser.remainingCredits}
+      signOut={<SignOutButton />}
+    />
+  );
 }

@@ -1,4 +1,4 @@
-export type ToolTab = "compress" | "stitch" | "id-photo";
+export type ToolTab = "compress" | "stitch" | "id-photo" | "ai-image";
 
 export function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -10,13 +10,19 @@ export function formatDimensions(width: number, height: number) {
   return `${Math.round(width)} × ${Math.round(height)}`;
 }
 
-export function downloadBlob(blob: Blob, filename: string) {
+export async function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = filename;
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+export async function downloadFromUrl(url: string, filename: string) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  await downloadBlob(blob, filename);
 }
 
 export function timestampName(prefix: string, ext: string) {
